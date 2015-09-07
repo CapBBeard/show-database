@@ -1,9 +1,13 @@
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 
 <dom-module id="sdb-show">
     <style>
@@ -11,28 +15,37 @@
         @apply(--layout-horizontal);
         @apply(--layout-justified);
     }
+    
+    paper-item-body {
+        --paper-item-body-two-line-min-height: 58px;
+    }
+    
+    .avatar {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #ccc;
+    }
     </style>
     <template>
         Show
-        <iron-ajax auto id="ajax" url="http://scdl.reeve.co.nz/api/show/1" handle-as="json" last-response="{{show}}" class="fit"></iron-ajax>
-        <iron-list items="[[show.roles.data]]" as="role">
-            <template>
-                <div class="container horizontal layout">
-                    <div>{{role.name}}</div> 
-                    <div style="width:50%">
-                        <iron-list items="[[role.people.data]]" as="person">
-                            <template>
-                                <paper-item>
-                                    <paper-item-body>
-                                        <div><span>{{person.firstName}}</span> <span>{{person.lastName}}</span></div>
-                                    </paper-item-body>
-                                </paper-item>
-                            </template>
-                        </iron-list>
-                    </div>  
-                </div>
-            </template>
-        </iron-list>
+            <div class="list">
+               <iron-ajax auto url="http://scdl.reeve.co.nz/api/show/1" handle-as="json" last-response="{{show}}"></iron-ajax>
+               <template is="dom-repeat" items="[[show.roles.data]]" as="role">
+                        <template is="dom-repeat" items="{{role.people.data}}" as="person">
+                            <paper-icon-item style="position:relative">
+                                <iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
+                                <paper-item-body two-line>
+                                    <div><span>{{person.firstName}}</span> <span>{{person.lastName}}</span></div>
+                                    <div secondary>{{role.name}}</div>
+                                </paper-item-body>
+                                <paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
+                            </paper-icon-item>
+                        </template>
+                </template>
+               </div>
     </template>
 </dom-module>
 <script>
