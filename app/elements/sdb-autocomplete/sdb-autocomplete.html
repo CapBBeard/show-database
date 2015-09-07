@@ -1,0 +1,87 @@
+<dom-module id="sdb-autocomplete">
+    <style>
+    iron-collapse {
+        box-shadow: 6px;
+    }
+
+    paper-button {
+        width: 100%;
+        text-transform: none;
+    }
+    </style>
+    <template>
+        <iron-ajax id="ajax" url="http://scdl.reeve.co.nz/api/show/autocomplete" handle-as="json" last-response="{{choices}}"></iron-ajax>
+        <paper-input-container>
+            <label>{{label}}</label>
+            <content select=".content"></content>
+            <input id="searchBox" class="paper-input-input" is="iron-input" bind-value="{{searchValue::input}}"></input>
+        </paper-input-container>
+        <iron-collapse id="collapse">
+            <paper-material>
+                <div>
+                    <template id="resultList" is="dom-repeat" items="{{choices.data}}">
+                        <paper-item>
+                            <paper-button on-tap="_selectItem"><span>{{item.title}}</span> (<span>{{item.year}}</span>, <span>{{item.section.name}}</span>)</paper-button>
+                        </paper-item>
+                    </template>
+                </div>
+            </paper-material>
+        </iron-collapse>
+    </template>
+</dom-module>
+<script>
+(function() {
+    Polymer({
+        is: "sdb-autocomplete",
+        properties: {
+            choices: Array,
+            label: String,
+            value: {
+                type: Object,
+            },
+            searchValue: {
+                type: String,
+                value: '',
+                observer: "_valueChanged"
+            },
+            ajaxParams: {
+                type: Object,
+                computed: "_processParams()"
+            }
+        },
+        ready: function() {
+            this.$.resultList.render();
+            this.label = 'Search';
+        },
+        _valueChanged: function(e) {
+
+            if (e.length > 0) {            
+                this.$.ajax.params = this._processParams();
+                this.$.ajax.generateRequest();
+            }
+            
+            var collapse = this.$.collapse;
+
+            if (e != '' && !collapse.opened) {
+                this.$.resultList.render()
+                collapse.toggle()
+                
+            } else
+            if (e == '' && collapse.opened) {
+                collapse.toggle()
+            }
+        },
+        _selectItem: function(event) {
+            this.set('searchValue', event.model.item.name)
+            this.set('value', event.model.item)
+            collapse.toggle()
+        },
+        _processParams: function() {
+            console.log(this.searchValue);
+            return {
+                'input': this.searchValue
+            };
+        }
+    })
+})()
+</script>
