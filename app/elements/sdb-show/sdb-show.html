@@ -30,12 +30,13 @@
     }
     </style>
     <template>
-        Show
+        <more-route context name="show" params="{{params}}"></more-route>
+            <h1>[[show.title]]</h1>
             <div class="list">
-               <iron-ajax auto url="http://scdl.reeve.co.nz/api/show/1" handle-as="json" last-response="{{show}}"></iron-ajax>
+               <iron-ajax id="ajax" url="http://scdl.reeve.co.nz/api/show/1" handle-as="json" last-response="{{show}}"></iron-ajax>
                <template is="dom-repeat" items="[[show.roles.data]]" as="role">
                         <template is="dom-repeat" items="{{role.people.data}}" as="person">
-                            <paper-icon-item style="position:relative">
+                            <paper-icon-item style="position:relative" on-tap="_onPersonTapped" person-id="{{person.id}}">
                                 <iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
                                 <paper-item-body two-line>
                                     <div><span>{{person.firstName}}</span> <span>{{person.lastName}}</span></div>
@@ -46,8 +47,9 @@
                         </template>
                 </template>
                </div>
+
     </template>
-</dom-module>
+
 <script>
 (function() {
     Polymer({
@@ -57,8 +59,16 @@
             show: Object,
         },
         ready: function() {
-           
+            this.$.ajax.url = "http://scdl.reeve.co.nz/api/show/" + this.params.showId;
+            this.$.ajax.generateRequest();
+        },
+        _onPersonTapped: function(event) {
+            var personId = event.currentTarget.personId;
+
+            MoreRouting.navigateTo('person', {personId: personId});
+            event.stopPropagation();
         }
     })
 })()
 </script>
+</dom-module>

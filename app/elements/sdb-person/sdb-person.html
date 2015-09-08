@@ -1,0 +1,74 @@
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+
+<dom-module id="sdb-person">
+    <style>
+    .container {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+    }
+    
+    paper-item-body {
+        --paper-item-body-two-line-min-height: 58px;
+    }
+   
+    .avatar {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #ccc;
+    }
+    </style>
+    <template>
+        <more-route context name="person" params="{{params}}"></more-route>
+
+            <h1>[[fullName]]</h1>
+            <p><span>[[person.roles.data.length]]</span> shows.</p>
+            <div class="list">
+               <iron-ajax id="ajax" url="http://scdl.reeve.co.nz/api/person/1" handle-as="json" last-response="{{person}}"></iron-ajax>
+               <template is="dom-repeat" items="[[person.roles.data]]" as="role">
+					<paper-icon-item style="position:relative">
+						<iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
+						<paper-item-body two-line>
+							<div><span>{{role.show.title}}</span> <span>{{role.show.year}}</span> <span>{{role.show.section.name}}</span></div>
+							<div secondary>{{role.name}}</div>
+						</paper-item-body>
+						<paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
+					</paper-icon-item>
+                </template>
+               </div>
+
+    </template>
+<script>
+(function() {
+    Polymer({
+        is: "sdb-person",
+        properties: {
+            personId: 0,
+            fullName: {
+                type: String,
+                readOnly: true,
+                computed: 'getFullName(person.firstName, person.lastName)'
+            },
+        },
+        ready: function() {
+            this.$.ajax.url = "http://scdl.reeve.co.nz/api/person/" + this.params.personId;
+            this.$.ajax.generateRequest();
+        },
+        getFullName: function(first, last) {
+            return first + " " + last;
+        }
+    })
+})()
+</script>
+</dom-module>

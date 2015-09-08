@@ -112,55 +112,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <!-- Main Content -->
         <div class="content">
-          <app-router>
-                  <!-- matches using a path variable -->
-                  <app-route path="/show/:id" import="/elements/sdb-show/sdb-show.html" element="sdb-show"></app-route>
-                  <app-route path="/person/:id" import="/elements/sdb-show/sdb-show.html" element="sdb-show"></app-route>
-      
-                  <!-- matches everything else -->
-                  <!--<app-route path="*" import="/pages/not-found-page.html"></app-route>-->
-                </app-router>
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
             <section>
               <paper-material elevation="1">
                 
+                <more-route-selector>
+                  <iron-pages>
+                    <sdb-show></sdb-show>
+                    <sdb-person></sdb-person>
+                  </iron-pages>
+                </more-route-selector>
                 
-                
-                
-                <sdb-autocomplete></sdb-autocomplete>
-                <my-greeting></my-greeting>
-                
-                
-                <sdb-show></sdb-show>
               </paper-material>
             </section>
-
-            <section data-route="users">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
-              </paper-material>
-            </section>
-
-            <section data-route="user-info">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">
-                User:<span>{{params.name}}</span>
-                </h2>
-                <div>This is <span>{{params.name}}</span>'s section</div>
-              </paper-material>
-            </section>
-
-            <section data-route="contact">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Contact</h2>
-                <p>This is the contact section</p>
-              </paper-material>
-            </section>
-
-          </iron-pages>
         </div>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
