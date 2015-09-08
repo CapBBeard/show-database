@@ -35,8 +35,10 @@
             <h1>[[fullName]]</h1>
             <p><span>[[person.roles.data.length]]</span> shows.</p>
             <div class="list">
-               <iron-ajax id="ajax" url="http://scdl.reeve.co.nz/api/person/1" handle-as="json" last-response="{{person}}"></iron-ajax>
-               <template is="dom-repeat" items="[[person.roles.data]]" as="role">
+              <sdb-auth-ajax>
+                <iron-ajax id="ajax" handle-as="json" last-response="{{person}}"></iron-ajax>
+              </sdb-auth-ajax>
+              <template is="dom-repeat" items="[[person.roles.data]]" as="role">
 					<paper-icon-item style="position:relative">
 						<iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
 						<paper-item-body two-line>
@@ -45,8 +47,8 @@
 						</paper-item-body>
 						<paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
 					</paper-icon-item>
-                </template>
-               </div>
+              </template>
+            </div>
 
     </template>
 <script>
@@ -61,8 +63,9 @@
                 computed: 'getFullName(person.firstName, person.lastName)'
             },
         },
+        behaviors: [SDB.Config],
         ready: function() {
-            this.$.ajax.url = "http://scdl.reeve.co.nz/api/person/" + this.params.personId;
+            this.$.ajax.url = this.rootUrl + "api/person/" + this.params.personId;
             this.$.ajax.generateRequest();
         },
         getFullName: function(first, last) {

@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+
+<dom-module id="sdb-login">
+
+    <template>
+        <div id="auth-container">
+            Auth
+            <iron-ajax id="ajax" handle-as="json" method="POST" on-response="loginResponse" on-error="loginError"></iron-ajax>
+            <iron-localstorage id="storage" name="sdb-token" value="{{token}}"></iron-localstorage>
+            <template is="dom-if" if="{{!isLoggedIn}}">
+                <paper-button on-tap="openLoginDialog">Log in</paper-button>
+				<paper-dialog id="login-dialog" modal>
+      				<p>Login</p>
+					<div>
+                        <paper-input label="Email Address" value="{{email}}" floatinglabel></paper-input>
+                        <paper-input label="Password" type="password" value="{{password}}" floatinglabel></paper-input>
+                    </div>
+                    <paper-toast text="An error has occured while trying to log you in. Please check your data and try again." id="toast-error" onclick="this.hide()"></paper-toast>
+      				<div class="buttons">
+						<paper-button on-tap="login">Log in</paper-button>
+        				<paper-button dialog-confirm autofocus>Tap me to close</paper-button>
+      				</div>
+    			</paper-dialog>
+            </template>
+            <template is="dom-if" if="{{isLoggedIn}}">
+                <div id="loggedin" class="[ logininfo ]">
+                    <div class="[ message ]">Welcome!</div>
+                    <div>
+                        <paper-button  on-click="logout">Log out</paper-button> 
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <iron-signals on-iron-signal-user-login="loginChanged"></iron-signals>
+    </template>
+
+</dom-module>
+
+<script>
+    'use strict';
+    Polymer({
+        is: 'sdb-login',
+        behaviors: [SDB.Config],
+        properties: {
+            username: { type: String, value: '', notify: true },
+            password: { type: String, value: '', notify: true },
+            isLoggedIn: { type: Boolean, value: false, notify: true}
+        },
+        ready: function () {
+            this.$.ajax.url = this.rootUrl + 'api/user/login';
+        },
+        login: function () {
+            console.log('logging in');
+            this.loginInProgress = true;
+            this.$.ajax.body = 'email=' + encodeURIComponent(this.email) + '&password=' + encodeURIComponent(this.password);
+            this.$.ajax.contentType = 'application/x-www-form-urlencoded';
+            this.$.ajax.generateRequest();
+        },
+        loginResponse: function(request) {
+            this.fire('iron-signal', { name: 'user-login', data: { baasicUser: this.baasicUser } });
+        },
+        loginError: function(request) {
+            this.$$('#toast-error').show();
+            this.fire('iron-signal', { name: 'user-login', data: { baasicUser: this.baasicUser } });
+        },
+        openLoginDialog: function(event) {
+            this.$$('#login-dialog').open();
+        }
+    });
+</script>

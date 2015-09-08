@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+<dom-module id="sdb-auth-ajax">
+
+    <template>
+		<content>
+            <!-- assumes iron-ajax inside -->
+		</content>
+        <iron-signals on-iron-signal-user-login="_processAuth"></iron-signals>
+        <iron-localstorage id="storage" name="sdb-token" value="{{_token}}" on-iron-localstorage-load="_dataLoaded"></iron-localstorage>
+    </template>
+
+</dom-module>
+
+<script>
+    'use strict';
+    Polymer({
+        is: 'sdb-auth-ajax',
+        ready: function () {
+			this._setAjaxHeaders();
+		},
+        _processAuth: function () {
+            this.$.storage.reload();
+        },
+        _dataLoaded: function() {
+            this._setAjaxHeaders();
+        },
+		_setAjaxHeaders: function() {
+			var children = Polymer.dom(this).children;
+			
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].localName === "iron-ajax" && 'headers' in children[0]) {
+                    if (!children[i].headers) { 
+                        children[i].headers = {};
+                    }
+                    children[i].headers.Authorization = "Bearer " + this._token;
+                }
+            }
+		}
+    });
+</script>
