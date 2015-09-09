@@ -11,7 +11,7 @@
         <div id="auth-container">
             Auth
             <iron-ajax id="ajax" handle-as="json" method="POST" on-response="loginResponse" on-error="loginError"></iron-ajax>
-            <iron-localstorage id="storage" name="sdb-token" value="{{token}}"></iron-localstorage>
+            <iron-localstorage id="storage" name="sdb-user" value="{{user}}" on-iron-localstorage-load-empty="_initializeEmptyUser" on-iron-localstorage-load="_dataLoaded"></iron-localstorage>
             <template is="dom-if" if="{{!isLoggedIn}}">
                 <paper-button on-tap="openLoginDialog">Log in</paper-button>
 				<paper-dialog id="login-dialog" modal>
@@ -48,12 +48,24 @@
         is: 'sdb-login',
         behaviors: [SDB.Config],
         properties: {
-            username: { type: String, value: '', notify: true },
-            password: { type: String, value: '', notify: true },
-            isLoggedIn: { type: Boolean, value: false, notify: true}
+            isLoggedIn: { type: Boolean, value: false, notify: true},
         },
         ready: function () {
             this.$.ajax.url = this.rootUrl + 'api/user/login';
+        },
+        _initializeEmptyUser: function() {
+            console.log('init empty');
+            this.user = {
+                token: "",
+                email: ""   
+            };  
+        },
+        _dataLoaded: function() {
+            console.log('loaded');
+            if (this.user.token) {
+                console.log('tokened');
+                this.fire('iron-signal', { name: 'user-login', data: this.user});
+            }  
         },
         login: function () {
             console.log('logging in');
@@ -62,12 +74,23 @@
             this.$.ajax.contentType = 'application/x-www-form-urlencoded';
             this.$.ajax.generateRequest();
         },
-        loginResponse: function(request) {
-            this.fire('iron-signal', { name: 'user-login', data: { baasicUser: this.baasicUser } });
+        loginResponse: function(request, detail) {
+            this.set('user.token', detail.response.token);
+            this.set('user.email', this.email);         
+            this.fire('iron-signal', { name: 'user-login', data: this.user });
         },
         loginError: function(request) {
             this.$$('#toast-error').show();
-            this.fire('iron-signal', { name: 'user-login', data: { baasicUser: this.baasicUser } });
+            this.set('user.token', "");
+            this.set('user.email', "");         
+            this.fire('iron-signal', { name: 'user-login', data: this.user });
+        },
+        loginChanged: function() {
+            if (this.user.token) {
+                isLoggedIn = true;
+            } else {
+                isLoggedIn = false;
+            }
         },
         openLoginDialog: function(event) {
             this.$$('#login-dialog').open();

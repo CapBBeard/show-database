@@ -33,9 +33,9 @@
         <more-route context name="show" params="{{params}}"></more-route>
             <h1>[[show.title]]</h1>
             <div class="list">
-                <sdb-auth-ajax>
-               <iron-ajax id="ajax" handle-as="json" last-response="{{show}}"></iron-ajax>
-                </sdb-auth-ajax>
+               <sdb-auth-ajax>
+                <iron-ajax id="ajax" handle-as="json" last-response="{{show}}"></iron-ajax>
+               </sdb-auth-ajax>
                <template is="dom-repeat" items="[[show.roles.data]]" as="role">
                         <template is="dom-repeat" items="{{role.people.data}}" as="person">
                             <paper-icon-item style="position:relative" on-tap="_onPersonTapped" person-id="{{person.id}}">
@@ -57,13 +57,21 @@
     Polymer({
         is: "sdb-show",
         properties: {
-            showId: 0,
             show: Object,
         },
         behaviors: [SDB.Config],
+        observers: [
+            '_showChanged(params.showId)'
+        ],
         ready: function() {
-            this.$.ajax.url = this.rootUrl + "api/show/" + this.params.showId;
-            this.$.ajax.generateRequest();
+        },
+        _showChanged: function() {
+            console.log('show params changed');
+            console.log(this.params);
+            if (this.params.showId) {
+                this.$.ajax.url = this.rootUrl + "api/show/" + this.params.showId;
+                this.$.ajax.generateRequest();
+            }
         },
         _onPersonTapped: function(event) {
             var personId = event.currentTarget.personId;

@@ -39,7 +39,7 @@
                 <iron-ajax id="ajax" handle-as="json" last-response="{{person}}"></iron-ajax>
               </sdb-auth-ajax>
               <template is="dom-repeat" items="[[person.roles.data]]" as="role">
-					<paper-icon-item style="position:relative">
+					<paper-icon-item style="position:relative" on-tap="_onShowTapped" show-id="{{role.show.id}}">
 						<iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
 						<paper-item-body two-line>
 							<div><span>{{role.show.title}}</span> <span>{{role.show.year}}</span> <span>{{role.show.section.name}}</span></div>
@@ -56,20 +56,36 @@
     Polymer({
         is: "sdb-person",
         properties: {
-            personId: 0,
             fullName: {
                 type: String,
                 readOnly: true,
                 computed: 'getFullName(person.firstName, person.lastName)'
             },
+            person: Object
         },
         behaviors: [SDB.Config],
+        observers: [
+            '_personChanged(params.personId)'
+        ],
         ready: function() {
-            this.$.ajax.url = this.rootUrl + "api/person/" + this.params.personId;
-            this.$.ajax.generateRequest();
+
+        },
+        _personChanged: function() {
+            console.log('person params changed');
+            console.log(this.params);
+            if (this.params.personId) {
+                this.$.ajax.url = this.rootUrl + "api/person/" + this.params.personId;
+                this.$.ajax.generateRequest();
+            }
         },
         getFullName: function(first, last) {
             return first + " " + last;
+        },
+        _onShowTapped: function(event) {
+            var showId = event.currentTarget.showId;
+
+            MoreRouting.navigateTo('show', {showId: showId});
+            event.stopPropagation();
         }
     })
 })()

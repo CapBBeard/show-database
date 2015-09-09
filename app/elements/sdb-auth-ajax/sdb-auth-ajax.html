@@ -7,7 +7,6 @@
             <!-- assumes iron-ajax inside -->
 		</content>
         <iron-signals on-iron-signal-user-login="_processAuth"></iron-signals>
-        <iron-localstorage id="storage" name="sdb-token" value="{{_token}}" on-iron-localstorage-load="_dataLoaded"></iron-localstorage>
     </template>
 
 </dom-module>
@@ -16,16 +15,12 @@
     'use strict';
     Polymer({
         is: 'sdb-auth-ajax',
-        ready: function () {
-			this._setAjaxHeaders();
-		},
-        _processAuth: function () {
-            this.$.storage.reload();
+        _processAuth: function (e, data, sender) {
+            if (data.token) {
+                this._setAjaxHeaders(data.token);
+            }
         },
-        _dataLoaded: function() {
-            this._setAjaxHeaders();
-        },
-		_setAjaxHeaders: function() {
+		_setAjaxHeaders: function(token) {
 			var children = Polymer.dom(this).children;
 			
             for (var i = 0; i < children.length; i++) {
@@ -33,7 +28,7 @@
                     if (!children[i].headers) { 
                         children[i].headers = {};
                     }
-                    children[i].headers.Authorization = "Bearer " + this._token;
+                    children[i].headers.Authorization = "Bearer " + token;
                 }
             }
 		}
