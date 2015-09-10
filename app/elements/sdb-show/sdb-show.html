@@ -47,6 +47,8 @@
         
         <paper-material elevation="1">
             <h1>[[show.title]]</h1>
+            <p><span>[[show.section.name]]</span><br />Season: <span>[[show.opened]]</span> to <span>[[show.closed]]</span></p>
+            <p>[[show.description]]</p>
             <div class="list">
                <sdb-auth-ajax>
                 <iron-ajax id="ajax" handle-as="json" last-response="{{show}}"></iron-ajax>
@@ -66,13 +68,16 @@
                 </template>
                </div>
         </paper-material>
-        <sdb-dropzone for-type="show" for-id="[[params.showId]]" dropzone-id="show"></sdb-dropzone>
+        <template is="dom-if" if="{{isLoggedIn}}">
+            <sdb-dropzone for-type="show" for-id="[[params.showId]]" dropzone-id="show"></sdb-dropzone>
+        </template>
     </template>
 
 <script>
 (function() {
+    /*global SDB, MoreRouting*/
     Polymer({
-        is: "sdb-show",
+        is: 'sdb-show',
         properties: {
             show: Object,
         },
@@ -87,7 +92,7 @@
             
             console.log(this.params);
             if (this.params.showId) {
-                this.$.ajax.url = this.rootUrl + "/api/show/" + this.params.showId;
+                this.$.ajax.url = this.rootUrl + '/api/show/' + this.params.showId;
                 this.$.ajax.generateRequest();
             }
         },
@@ -97,13 +102,13 @@
             MoreRouting.navigateTo('person', {personId: personId});
             event.stopPropagation();
         },
-        _personHasImage(image) {
+        _personHasImage: function(image) {
             return image ? true : false;
         },
-        _getImagePath(image) {
-            return this.rootUrl + "/api/image/contact/" + image;
+        _getImagePath: function(image) {
+            return this.rootUrl + '/api/image/contact/' + image;
         }
-    })
-})()
+    });
+})();
 </script>
 </dom-module>

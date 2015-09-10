@@ -75,15 +75,16 @@
 
 <script>
 (function() {
+    /*global SDB, MoreRouting*/
     Polymer({
-        is: "sdb-show-list",
+        is: 'sdb-show-list',
         properties: {
         },
         behaviors: [SDB.Config],
         observers: [
         ],
         ready: function() {
-			this.$.ajax.url = this.rootUrl + "/api/show";
+			this.$.ajax.url = this.rootUrl + '/api/show';
 			this.$.ajax.generateRequest();
         },
         _onShowTapped: function(event) {
@@ -92,13 +93,13 @@
             MoreRouting.navigateTo('show', {showId: showId});
             event.stopPropagation();
         },
-        _showHasImage(image) {
+        _showHasImage: function(image) {
             return image ? true : false;
         },
-        _getImagePath(image) {
-            return this.rootUrl + "/api/image/small/" + image;
+        _getImagePath: function(image) {
+            return this.rootUrl + '/api/image/small/' + image;
         }
-    })
-})()
+    });
+})();
 </script>
 </dom-module>

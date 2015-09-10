@@ -1,8 +1,6 @@
+<link rel="import" href="../sdb-core/sdb-core.html">
 <link rel="stylesheet" href="../../../bower_components/dropzone/dist/min/dropzone.min.css">
 <script src="../../../bower_components/dropzone/dist/min/dropzone.min.js"></script>
-<script>
-  Dropzone.autoDiscover = false;  
-</script>
  
 <dom-module id="sdb-dropzone">
 
@@ -28,17 +26,20 @@
 </dom-module>
 
 <script>
+  /*global SDB, Dropzone*/
+  Dropzone.autoDiscover = false;
+  
   (function() {
     Polymer({
       is: 'sdb-dropzone',
       behaviors: [SDB.Config],
       properties: {
-        forType: { type: String, value: "show" },
+        forType: { type: String, value: 'show' },
         forId: { type: Number, value: 0 },
-        dropzoneId: { type: String, value: "a" }
+        dropzoneId: { type: String, value: 'a' }
       },
       _expandedDropzoneId: function() {
-        return "sdb-dropzone-" + this.dropzoneId;
+        return 'sdb-dropzone-' + this.dropzoneId;
       },
       attached: function() {
         this.dropzone = new Dropzone(
@@ -50,18 +51,17 @@
               uploadMultiple: false,
               addRemoveLinks: true,
               acceptedFiles: '.jpg,.jpeg',
+              /*jshint unused: false, node: true*/
               init: function() {
-                this.on("processing", function(file) {
+                this.on('processing', function(file) {
                   if (this.options.sdbParent.token) {
                     this.options.headers = {
-                      "Authorization": "Bearer " + this.options.sdbParent.token
+                      'Authorization': 'Bearer ' + this.options.sdbParent.token
                     };
                   }
                 });
                 
-                this.on("sending", function(file, xhr, formData) {
-                  console.log(this.options.sdbParent.forType);
-                  console.log(this.options.sdbParent.forId);
+                this.on('sending', function(file, xhr, formData) {
                     formData.append('type', this.options.sdbParent.forType);
                     formData.append('id', this.options.sdbParent.forId);
                 });

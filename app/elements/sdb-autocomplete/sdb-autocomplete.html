@@ -32,7 +32,7 @@
 <script>
 (function() {
     Polymer({
-        is: "sdb-autocomplete",
+        is: 'sdb-autocomplete',
         properties: {
             choices: Array,
             label: String,
@@ -42,11 +42,11 @@
             searchValue: {
                 type: String,
                 value: '',
-                observer: "_valueChanged"
+                observer: '_valueChanged'
             },
             ajaxParams: {
                 type: Object,
-                computed: "_processParams()"
+                computed: '_processParams()'
             }
         },
         ready: function() {
@@ -62,26 +62,24 @@
             
             var collapse = this.$.collapse;
 
-            if (e != '' && !collapse.opened) {
-                this.$.resultList.render()
-                collapse.toggle()
-                
+            if (e !== '' && !collapse.opened) {
+                this.$.resultList.render();
+                collapse.toggle();
             } else
-            if (e == '' && collapse.opened) {
-                collapse.toggle()
+            if (e === '' && collapse.opened) {
+                collapse.toggle();
             }
         },
         _selectItem: function(event) {
-            this.set('searchValue', event.model.item.name)
-            this.set('value', event.model.item)
-            collapse.toggle()
+            this.set('searchValue', event.model.item.name);
+            this.set('value', event.model.item);
+            this.$.collapse.toggle();
         },
         _processParams: function() {
-            console.log(this.searchValue);
             return {
                 'input': this.searchValue
             };
         }
-    })
-})()
+    });
+})();
 </script>

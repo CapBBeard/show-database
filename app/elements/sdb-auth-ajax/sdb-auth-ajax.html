@@ -12,10 +12,10 @@
 </dom-module>
 
 <script>
-    'use strict';
+(function() {
     Polymer({
         is: 'sdb-auth-ajax',
-        _processAuth: function (e, data, sender) {
+        _processAuth: function (e, data) {
             if (data.token) {
                 this._setAjaxHeaders(data.token);
             }
@@ -24,13 +24,14 @@
 			var children = Polymer.dom(this).children;
 			
             for (var i = 0; i < children.length; i++) {
-                if (children[i].localName === "iron-ajax" && 'headers' in children[0]) {
+                if (children[i].localName === 'iron-ajax' && 'headers' in children[0]) {
                     if (!children[i].headers) { 
                         children[i].headers = {};
                     }
-                    children[i].headers.Authorization = "Bearer " + token;
+                    children[i].headers.Authorization = 'Bearer ' + token;
                 }
             }
 		}
     });
+})();
 </script>

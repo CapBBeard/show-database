@@ -7,7 +7,6 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
-
 <dom-module id="sdb-login">
 
     <template>
@@ -43,7 +42,8 @@
 </dom-module>
 
 <script>
-    'use strict';
+/*global SDB*/
+(function() {
     Polymer({
         is: 'sdb-login',
         behaviors: [SDB.Config],
@@ -55,8 +55,8 @@
         },
         _initializeEmptyUser: function() {
             this.user = {
-                token: "",
-                email: ""   
+                token: '',
+                email: ''   
             };  
         },
         _dataLoaded: function() {
@@ -70,6 +70,7 @@
             this.$.ajax.contentType = 'application/x-www-form-urlencoded';
             this.$.ajax.generateRequest();
         },
+        /*jshint unused: false, node: true*/
         loginResponse: function(request, detail) {
             this.set('user.token', detail.response.token);
             this.set('user.email', this.email);         
@@ -77,16 +78,17 @@
             
             console.log('closing login dialog');
             this.$$('#login-dialog').close();
-            this.email = "";
-            this.password = "";
+            this.email = '';
+            this.password = '';
         },
+        /*jshint unused: false, node: true*/
         loginError: function(request) {
             this.$$('#toast-error').show();
             this.logout();
         },
         logout: function() {
-            this.set('user.token', "");
-            this.set('user.email', "");
+            this.set('user.token', '');
+            this.set('user.email', '');
 
             this.fire('iron-signal', { name: 'user-login', data: this.user });
         },
@@ -98,9 +100,11 @@
                 this.isLoggedIn = false;
             }
         },
+        /*jshint unused: false, node: true*/
         openLoginDialog: function(event) {
             console.log('opening login dialog');
             this.$$('#login-dialog').open();
         }
     });
+})();
 </script>

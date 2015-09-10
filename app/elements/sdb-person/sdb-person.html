@@ -103,8 +103,9 @@
     </template>
 <script>
 (function() {
+    /*global SDB, MoreRouting*/
     Polymer({
-        is: "sdb-person",
+        is: 'sdb-person',
         properties: {
             fullName: {
                 type: String,
@@ -124,16 +125,19 @@
             return this.rootUrl + path;
         },
         _personChanged: function() {
-            this.person = {};
+            this.set('person.firstName', '');
+            this.set('person.lastName', '');
+            this.set('person.roles.data', '');
+            this.set('person.image', '');
             
             console.log(this.params);
             if (this.params.personId) {
-                this.$.ajax.url = this.rootUrl + "/api/person/" + this.params.personId;
+                this.$.ajax.url = this.rootUrl + '/api/person/' + this.params.personId;
                 this.$.ajax.generateRequest();
             }
         },
         getFullName: function(first, last) {
-            return first + " " + last;
+            return first + ' ' + last;
         },
         _onShowTapped: function(event) {
             var showId = event.currentTarget.showId;
@@ -141,13 +145,13 @@
             MoreRouting.navigateTo('show', {showId: showId});
             event.stopPropagation();
         },
-        _hasImage(image) {
+        _hasImage: function(image) {
             return image ? true : false;
         },
-        _getImagePath(image) {
-            return this.rootUrl + "/api/image/contact/" + image;
+        _getImagePath: function(image) {
+            return this.rootUrl + '/api/image/contact/' + image;
         }
-    })
-})()
+    });
+})();
 </script>
 </dom-module>
