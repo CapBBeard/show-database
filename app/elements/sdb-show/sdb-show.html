@@ -30,6 +30,10 @@
         background: #ccc;
     }
     
+    paper-icon-item:hover {
+        background-color: #efefef;
+    }
+    
     paper-material {
         border-radius: 2px;
         padding: 16px;
@@ -39,6 +43,8 @@
     </style>
     <template>
         <more-route context name="show" params="{{params}}"></more-route>
+        <sdb-auth is-logged-in="{{isLoggedIn}}" token="{{token}}"></sdb-auth>
+        
         <paper-material elevation="1">
             <h1>[[show.title]]</h1>
             <div class="list">
@@ -48,7 +54,8 @@
                <template is="dom-repeat" items="[[show.roles.data]]" as="role">
                         <template is="dom-repeat" items="{{role.people.data}}" as="person">
                             <paper-icon-item style="position:relative" on-tap="_onPersonTapped" person-id="{{person.id}}">
-                                <iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
+                                <img src$="[[_getImagePath(person.image)]]" hidden$="{{!_personHasImage(person.image)}}" class="avatar" item-icon />
+                                <iron-icon hidden$="{{_personHasImage(person.image)}}" class="avatar" icon="social:person" item-icon></iron-icon>
                                 <paper-item-body two-line>
                                     <div><span>{{person.firstName}}</span> <span>{{person.lastName}}</span></div>
                                     <div secondary>{{role.name}}</div>
@@ -59,6 +66,7 @@
                 </template>
                </div>
         </paper-material>
+        <sdb-dropzone for-type="show" for-id="[[params.showId]]" dropzone-id="show"></sdb-dropzone>
     </template>
 
 <script>
@@ -79,7 +87,7 @@
             
             console.log(this.params);
             if (this.params.showId) {
-                this.$.ajax.url = this.rootUrl + "api/show/" + this.params.showId;
+                this.$.ajax.url = this.rootUrl + "/api/show/" + this.params.showId;
                 this.$.ajax.generateRequest();
             }
         },
@@ -88,6 +96,12 @@
 
             MoreRouting.navigateTo('person', {personId: personId});
             event.stopPropagation();
+        },
+        _personHasImage(image) {
+            return image ? true : false;
+        },
+        _getImagePath(image) {
+            return this.rootUrl + "/api/image/contact/" + image;
         }
     })
 })()

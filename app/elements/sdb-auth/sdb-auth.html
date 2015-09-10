@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="sdb-auth">
+
+    <template>
+        <iron-localstorage id="storage" name="sdb-user" value="{{user}}" on-iron-localstorage-load="_dataLoaded"></iron-localstorage>
+        <iron-signals on-iron-signal-user-login="_processAuth"></iron-signals>
+    </template>
+
+</dom-module>
+
+<script>
+    'use strict';
+    Polymer({
+        is: 'sdb-auth',
+        properties: {
+            isLoggedIn: { 
+                type: Boolean,
+                value: false,
+                notify: true
+            },
+            email: {
+                type: String,
+                value: '',
+                notify: true
+            },
+            token: {
+                type: String,
+                value: '',
+                notify: true
+            }
+        },
+        _dataLoaded: function() {
+            if (this.user.token) {
+                this.set('isLoggedIn', true);
+                this.set('token', this.user.token);
+                this.set('email', this.user.email);
+            }  
+        },
+        _processAuth: function (e, data) {
+            if (data.token) {
+                this.set('isLoggedIn', true);
+                this.set('token', data.token);
+                this.set('email', data.email);
+            } else {
+                this.set('isLoggedIn', false);
+                this.set('token', '');
+                this.set('email', '');
+            }
+        },
+    });
+</script>

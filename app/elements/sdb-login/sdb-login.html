@@ -51,7 +51,7 @@
             isLoggedIn: { type: Boolean, value: false, notify: true},
         },
         ready: function () {
-            this.$.ajax.url = this.rootUrl + 'api/user/login';
+            this.$.ajax.url = this.rootUrl + '/api/user/login';
         },
         _initializeEmptyUser: function() {
             this.user = {

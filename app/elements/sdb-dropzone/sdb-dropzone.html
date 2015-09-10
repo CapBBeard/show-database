@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="../../../bower_components/dropzone/dist/min/dropzone.min.css">
 <script src="../../../bower_components/dropzone/dist/min/dropzone.min.js"></script>
+<script>
+  Dropzone.autoDiscover = false;  
+</script>
+ 
 <dom-module id="sdb-dropzone">
 
   <style>
@@ -13,13 +17,10 @@
   </style>
 
   <template>
-    <paper-button on-tap="startTheMessage">Test Fire!</paper-button>
-    <iron-signals on-iron-signal-hello="passTheMessage">
-    <iron-signals on-iron-signal-user-login="_processAuth"></iron-signals>
+      <sdb-auth token="{{token}}" is-logged-in="{{isLoggedIn}}"></sdb-auth>
 
-      <div class="dropzone" id="sdb-dropzone-area">
+      <div class="dropzone" id$="[[_expandedDropzoneId(dropzoneId)]]">
         <div class="fallback">
-          fallback
         </div>
       </div>
 
@@ -30,78 +31,45 @@
   (function() {
     Polymer({
       is: 'sdb-dropzone',
-      ready: function() {
-        this._token = '';
+      behaviors: [SDB.Config],
+      properties: {
+        forType: { type: String, value: "show" },
+        forId: { type: Number, value: 0 },
+        dropzoneId: { type: String, value: "a" }
+      },
+      _expandedDropzoneId: function() {
+        return "sdb-dropzone-" + this.dropzoneId;
       },
       attached: function() {
-        // access a local DOM element by ID using this.$
         this.dropzone = new Dropzone(
-          '#sdb-dropzone-area',
+          '#' + this._expandedDropzoneId(),
           {
-              url: 'http://scdl.reeve.co.nz/api/image',
+              url: this.rootUrl + '/api/image',
               parallelUploads: 2,
               maxFileSize: 10,
               uploadMultiple: false,
               addRemoveLinks: true,
               acceptedFiles: '.jpg,.jpeg',
-              headers: {
-                  "Authorization": "Bearer " + this._token
-              }
-          });
+              init: function() {
+                this.on("processing", function(file) {
+                  if (this.options.sdbParent.token) {
+                    this.options.headers = {
+                      "Authorization": "Bearer " + this.options.sdbParent.token
+                    };
+                  }
+                });
+                
+                this.on("sending", function(file, xhr, formData) {
+                  console.log(this.options.sdbParent.forType);
+                  console.log(this.options.sdbParent.forId);
+                    formData.append('type', this.options.sdbParent.forType);
+                    formData.append('id', this.options.sdbParent.forId);
+                });
+              },
+              sdbParent: this
+          });        
         
-        this.dropzone.options.sdbDropzoneArea = {
-          paramName: 'file',
-          maxFilesize: 10, // MB
-          uploadMultiple: true,
-          acceptedFiles: '.jpg,.jpeg',
-          parallelUploads: 2,
-          addRemoveLinks: true,
-          url: this.rootUrl + 'api/image',
-          init: function() {
-            this.on('addedfile', function(file) {
-              console.log('Added file.');
-              console.log(file);
-            });
-            this.on('sending', function(file, xhr, formData) {
-              console.log('Sending file.');
-              formData.append('api_key', 0000000000000);
-              formData.append('timestamp', Date.now() / 1000);
-              formData.append('upload_preset', 'where-ky');
-            });
-            this.on('success', function(file, response) {
-              var baseURL = '/';
-              var url = baseURL.concat(response.public_id);
-              console.log('Cloudinary URL: ', url);
-              this.fire('iron-signal', {
-                name: 'hello',
-                data: null
-              });
-            });
-          }
-        };
-        
-        
-      },
-      _processAuth: function (e, data, sender) {
-          if (data.token) {
-              this._token = data.token;
-              if (this.dropzone) {
-                this.dropzone.options.headers = {
-                  "Authorization": "Bearer " + this._token
-                };
-              }
-          }
-      },
-      startTheMessage: function() {
-        this.fire('iron-signal', {
-          name: 'hello',
-          data: null
-        });
-      },
-      passTheMessage: function() {
-        alert("got it");
-      },
-      properties: {},
+      }
     });
   })();
 </script>

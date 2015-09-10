@@ -30,6 +30,24 @@
         background: #ccc;
     }
     
+    .large {
+        width: 128px;
+        height: 128px;
+    }
+    
+    paper-card {
+      margin-bottom: 16px;
+      max-width: 200px;
+    }
+    
+    paper-card img {
+      width: 100%;
+    }
+      
+    paper-icon-item:hover {
+        background-color: #efefef;
+    }
+    
     paper-material {
         border-radius: 2px;
         padding: 16px;
@@ -48,25 +66,39 @@
     </style>
     <template>
         <more-route context name="person" params="{{params}}"></more-route>
+        <sdb-auth is-logged-in="{{isLoggedIn}}" token="{{token}}"></sdb-auth>
+        
         <paper-material elevation="1">
-
-            <h1>[[fullName]]</h1>
-            <p><span>[[person.roles.data.length]]</span> shows.</p>
+                
+            <h1><img src$="[[_getImagePath(person.image)]]" hidden$="{{!_hasImage(person.image)}}" class="avatar large" item-icon /> <span>[[fullName]]</span></h1>
+            <p><span>[[person.roles.data.length]]</span> show(s).</p>
+            <!--<div class="list">
+                <template is="dom-repeat" items="[[person.images.data]]" as="image">
+                    <paper-card style="position:relative">  
+                        <img src="[[_imageUrl(image.filename)]]" />
+                    </paper-card>
+                </template>
+            </div>-->
             <div class="list">
               <sdb-auth-ajax>
                 <iron-ajax id="ajax" handle-as="json" last-response="{{person}}"></iron-ajax>
               </sdb-auth-ajax>
               <template is="dom-repeat" items="[[person.roles.data]]" as="role">
 					<paper-icon-item style="position:relative" on-tap="_onShowTapped" show-id="{{role.show.id}}">
-						<iron-icon class="avatar" icon="social:person" item-icon></iron-icon>
+                        <img src$="[[_getImagePath(role.show.image)]]" hidden$="{{!_hasImage(role.show.image)}}" class="avatar" item-icon />
+                        <iron-icon hidden$="{{_hasImage(role.show.image)}}" class="avatar" icon="social:person" item-icon></iron-icon>
+
 						<paper-item-body two-line>
-							<div><span>{{role.show.title}}</span> <span>{{role.show.year}}</span> <span>{{role.show.section.name}}</span></div>
+							<div><span>{{role.show.title}}</span> <small>- (<span>{{role.show.year}}</span> <span>{{role.show.section.name}}</span>)</small></div>
 							<div secondary>{{role.name}}</div>
 						</paper-item-body>
 						<paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
 					</paper-icon-item>
               </template>
             </div>
+            <template is="dom-if" if="{{isLoggedIn}}">
+                <sdb-dropzone for-type="person" for-id="[[params.personId]]" dropzone-id="person"></sdb-dropzone>
+            </template>
         </paper-material>
     </template>
 <script>
@@ -88,12 +120,15 @@
         ready: function() {
 
         },
+        _imageUrl: function(path) {
+            return this.rootUrl + path;
+        },
         _personChanged: function() {
             this.person = {};
             
             console.log(this.params);
             if (this.params.personId) {
-                this.$.ajax.url = this.rootUrl + "api/person/" + this.params.personId;
+                this.$.ajax.url = this.rootUrl + "/api/person/" + this.params.personId;
                 this.$.ajax.generateRequest();
             }
         },
@@ -105,6 +140,12 @@
 
             MoreRouting.navigateTo('show', {showId: showId});
             event.stopPropagation();
+        },
+        _hasImage(image) {
+            return image ? true : false;
+        },
+        _getImagePath(image) {
+            return this.rootUrl + "/api/image/contact/" + image;
         }
     })
 })()
