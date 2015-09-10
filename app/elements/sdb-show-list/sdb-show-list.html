@@ -1,0 +1,108 @@
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+
+<dom-module id="sdb-show-list">
+    <style>
+    .container {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+    }
+    
+    .avatar {
+      display: inline-block;
+      height: 64px;
+      width: 64px;
+      border-radius: 50%;
+      background: var(--paper-pink-500);
+      color: white;
+      line-height: 64px;
+      font-size: 30px;
+      text-align: center;
+    }
+    
+    paper-card {
+      margin-bottom: 16px;
+      max-width: 250px;
+    }
+
+    paper-card .title {
+      position: absolute;
+      top: 30px;
+      left: 100px;
+      color: var(--paper-indigo-500);
+    }
+
+    paper-card img {
+      width: 100%;
+    }
+
+    paper-card .big {
+      font-size: 22px;
+      padding: 8px 0 16px;
+      color: var(--google-grey-500);
+    }
+
+    paper-card .medium {
+      font-size: 16px;
+      padding-bottom: 8px;
+    }
+    
+    paper-material {
+        border-radius: 2px;
+        padding: 16px;
+        margin: 16px auto;
+        background: white;
+    }
+    </style>
+    <template>
+        <more-route context name="root" params="{{params}}"></more-route>
+        <paper-material elevation="1">
+            <div class="list">
+               	<sdb-auth-ajax>
+                	<iron-ajax id="ajax" handle-as="json" last-response="{{shows}}"></iron-ajax>
+               	</sdb-auth-ajax>
+               	<template is="dom-repeat" items="[[shows.data]]" as="show">
+                    <paper-card style="position:relative" on-tap="_onShowTapped" show-id="{{show.id}}">  
+                        <img src="http://placehold.it/250x310">
+                        
+                        <div class="card-content">
+                            <div class="big"><span>{{show.title}}</span></div>
+                            <div class="medium">{{show.section.name}}</div>
+                        </div>
+                        <paper-ripple id="ripple" style="pointer-events: none;"></paper-ripple>
+                    </paper-card>
+				</template>
+               </div>
+        </paper-material>
+    </template>
+
+<script>
+(function() {
+    Polymer({
+        is: "sdb-show-list",
+        properties: {
+        },
+        behaviors: [SDB.Config],
+        observers: [
+        ],
+        ready: function() {
+			this.$.ajax.url = this.rootUrl + "api/show";
+			this.$.ajax.generateRequest();
+        },
+        _onShowTapped: function(event) {
+            var showId = event.currentTarget.showId;
+
+            MoreRouting.navigateTo('show', {showId: showId});
+            event.stopPropagation();
+        }
+    })
+})()
+</script>
+</dom-module>

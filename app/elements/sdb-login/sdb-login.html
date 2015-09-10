@@ -4,35 +4,35 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
 
 <dom-module id="sdb-login">
 
     <template>
         <div id="auth-container">
-            Auth
             <iron-ajax id="ajax" handle-as="json" method="POST" on-response="loginResponse" on-error="loginError"></iron-ajax>
             <iron-localstorage id="storage" name="sdb-user" value="{{user}}" on-iron-localstorage-load-empty="_initializeEmptyUser" on-iron-localstorage-load="_dataLoaded"></iron-localstorage>
+            <paper-dialog id="login-dialog" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+      			<p>Login</p>
+				<div>
+                    <paper-input label="Email Address" value="{{email}}" floatinglabel></paper-input>
+                    <paper-input label="Password" type="password" value="{{password}}" floatinglabel></paper-input>
+                </div>
+                <paper-toast text="An error has occured while trying to log you in. Please check your data and try again." id="toast-error" onclick="this.hide()"></paper-toast>
+      		    <div class="buttons">
+                    <paper-button on-tap="login">Log in</paper-button>
+        			<paper-button dialog-dismiss autofocus>Cancel</paper-button>
+      			</div>
+    		</paper-dialog>
             <template is="dom-if" if="{{!isLoggedIn}}">
-                <paper-button on-tap="openLoginDialog">Log in</paper-button>
-				<paper-dialog id="login-dialog" modal>
-      				<p>Login</p>
-					<div>
-                        <paper-input label="Email Address" value="{{email}}" floatinglabel></paper-input>
-                        <paper-input label="Password" type="password" value="{{password}}" floatinglabel></paper-input>
-                    </div>
-                    <paper-toast text="An error has occured while trying to log you in. Please check your data and try again." id="toast-error" onclick="this.hide()"></paper-toast>
-      				<div class="buttons">
-						<paper-button on-tap="login">Log in</paper-button>
-        				<paper-button dialog-confirm autofocus>Tap me to close</paper-button>
-      				</div>
-    			</paper-dialog>
+                <paper-button on-click="openLoginDialog">Log in</paper-button>
             </template>
             <template is="dom-if" if="{{isLoggedIn}}">
                 <div id="loggedin" class="[ logininfo ]">
-                    <div class="[ message ]">Welcome!</div>
-                    <div>
-                        <paper-button  on-click="logout">Log out</paper-button> 
-                    </div>
+                    <span>{{user.email}}</span>
+                    <paper-button on-click="logout">Log out</paper-button> 
                 </div>
             </template>
         </div>
@@ -54,21 +54,17 @@
             this.$.ajax.url = this.rootUrl + 'api/user/login';
         },
         _initializeEmptyUser: function() {
-            console.log('init empty');
             this.user = {
                 token: "",
                 email: ""   
             };  
         },
         _dataLoaded: function() {
-            console.log('loaded');
             if (this.user.token) {
-                console.log('tokened');
                 this.fire('iron-signal', { name: 'user-login', data: this.user});
             }  
         },
         login: function () {
-            console.log('logging in');
             this.loginInProgress = true;
             this.$.ajax.body = 'email=' + encodeURIComponent(this.email) + '&password=' + encodeURIComponent(this.password);
             this.$.ajax.contentType = 'application/x-www-form-urlencoded';
@@ -78,21 +74,32 @@
             this.set('user.token', detail.response.token);
             this.set('user.email', this.email);         
             this.fire('iron-signal', { name: 'user-login', data: this.user });
+            
+            console.log('closing login dialog');
+            this.$$('#login-dialog').close();
+            this.email = "";
+            this.password = "";
         },
         loginError: function(request) {
             this.$$('#toast-error').show();
+            this.logout();
+        },
+        logout: function() {
             this.set('user.token', "");
-            this.set('user.email', "");         
+            this.set('user.email', "");
+
             this.fire('iron-signal', { name: 'user-login', data: this.user });
         },
         loginChanged: function() {
+            console.log('login changed');
             if (this.user.token) {
-                isLoggedIn = true;
+                this.isLoggedIn = true;
             } else {
-                isLoggedIn = false;
+                this.isLoggedIn = false;
             }
         },
         openLoginDialog: function(event) {
+            console.log('opening login dialog');
             this.$$('#login-dialog').open();
         }
     });

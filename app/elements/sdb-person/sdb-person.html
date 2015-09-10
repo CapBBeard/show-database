@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
@@ -28,9 +29,26 @@
         overflow: hidden;
         background: #ccc;
     }
+    
+    paper-material {
+        border-radius: 2px;
+        padding: 16px;
+        margin: 16px auto;
+        background: white;
+    }
+    
+    sdb-person {
+        opacity: 1;
+        transition: opacity 300ms;
+    }
+    sdb-person:unresolved {
+        opacity: 0;
+    }
+    
     </style>
     <template>
         <more-route context name="person" params="{{params}}"></more-route>
+        <paper-material elevation="1">
 
             <h1>[[fullName]]</h1>
             <p><span>[[person.roles.data.length]]</span> shows.</p>
@@ -49,7 +67,7 @@
 					</paper-icon-item>
               </template>
             </div>
-
+        </paper-material>
     </template>
 <script>
 (function() {
@@ -71,7 +89,8 @@
 
         },
         _personChanged: function() {
-            console.log('person params changed');
+            this.person = {};
+            
             console.log(this.params);
             if (this.params.personId) {
                 this.$.ajax.url = this.rootUrl + "api/person/" + this.params.personId;

@@ -8,7 +8,9 @@
     "neon-elements": "PolymerElements/neon-elements#1.0.0",
     "page": "visionmedia/page.js#~1.6.3",
     "iron-list": "PolymerElements/iron-list#~1.1.0",
-    "more-routing": "PolymerLabs/more-routing#~1.0.0"
+    "more-routing": "PolymerLabs/more-routing#~1.0.0",
+    "paper-card": "PolymerElements/paper-card#~1.0.4",
+    "dropzone": "enyo/dropzone#~4.0.1"
   },
   "devDependencies": {
     "web-component-tester": "*",

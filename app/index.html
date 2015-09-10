@@ -69,7 +69,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <!-- Drawer Content -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-          <a data-route="home" href="/">
+          
+          <a href="/">
             <iron-icon icon="home"></iron-icon>
             <span>Home</span>
           </a>
@@ -103,6 +104,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="middle middle-container center horizontal layout">
             <div class="app-name">Show Database</div>
           </div>
+          
+          <!-- Search -->
+          <div class="">
+            <sdb-autocomplete></sdb-autocomplete>
+          </div>
 
           <!-- Application sub title -->
           <div class="bottom bottom-container center horizontal layout">
@@ -114,16 +120,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Main Content -->
         <div class="content">
             <section>
-              <paper-material elevation="1">
+              
                 
                 <more-route-selector>
-                  <iron-pages>
+                  <neon-animated-pages selected="{{selected}}" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+                    <sdb-show-list></sdb-show-list>
                     <sdb-show></sdb-show>
                     <sdb-person></sdb-person>
-                  </iron-pages>
+                  </neon-animated-pages>
                 </more-route-selector>
                 
-              </paper-material>
             </section>
         </div>
       </paper-scroll-header-panel>

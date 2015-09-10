@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
@@ -28,9 +29,17 @@
         overflow: hidden;
         background: #ccc;
     }
+    
+    paper-material {
+        border-radius: 2px;
+        padding: 16px;
+        margin: 16px auto;
+        background: white;
+    }
     </style>
     <template>
         <more-route context name="show" params="{{params}}"></more-route>
+        <paper-material elevation="1">
             <h1>[[show.title]]</h1>
             <div class="list">
                <sdb-auth-ajax>
@@ -49,7 +58,7 @@
                         </template>
                 </template>
                </div>
-
+        </paper-material>
     </template>
 
 <script>
@@ -66,7 +75,8 @@
         ready: function() {
         },
         _showChanged: function() {
-            console.log('show params changed');
+            this.show = {};
+            
             console.log(this.params);
             if (this.params.showId) {
                 this.$.ajax.url = this.rootUrl + "api/show/" + this.params.showId;
